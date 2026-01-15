@@ -92,8 +92,9 @@ export default function AISearchPage() {
       const userID = tokenRaw ? JSON.parse(tokenRaw)?.[0]?.userID : null;
 
       const res = await UserApi.getuserinfo(userID);
-      console.log(res);
-      if (res.doTest) {
+
+      //console.log(res);
+      if (res.dotest === true) {
         window.location.href = '/finishedsurvey';
       }
     };

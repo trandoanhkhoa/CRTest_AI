@@ -4,11 +4,12 @@ import Question from '../../api/QuestionApi';
 export default function QuizSlide() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questions, setquestions] = useState([]);
-  const [questionIDcurrent, setquestionIDcurrent] = useState(0);
+
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Value của answer câu hỏi
   const itemQuestion = JSON.parse(localStorage.getItem('Itemquestion')) || [];
   const answeredMap = new Map(itemQuestion.map((i) => [i.idquestion, i.useranswer]));
   const startX = useRef(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: 'http://100.117.240.56:2030/api',
+  baseURL: 'https://aitrustapi-production.up.railway.app/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
