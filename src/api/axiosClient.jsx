@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: 'https://localhost:44395/api',
+  baseURL: 'http://100.117.240.56:2030/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
