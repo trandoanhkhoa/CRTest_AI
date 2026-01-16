@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const MailIcon = () => (
   <svg
@@ -16,6 +16,7 @@ const MailIcon = () => (
 );
 
 const RegisterSuccess = () => {
+  const info = JSON.parse(localStorage.getItem('registerInfo'));
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-100 px-4">
       <div className="relative bg-white max-w-md w-full p-8 rounded-3xl shadow-xl text-center">
@@ -40,13 +41,11 @@ const RegisterSuccess = () => {
 
         {/* Description */}
         <p className="text-gray-600 mb-6 leading-relaxed">
-          Hệ thống đã gửi thông tin tài khoản khảo sát đến email của bạn.
+          Hệ thống đã lưu thông tin tài khoản của bạn. Hãy đăng nhập tài khoản bên dưới ắt đầu làm
+          khảo sát
           <br />
-          <span className="font-medium text-gray-700">
-            Vui lòng kiểm tra hộp thư (bao gồm cả Spam)
-          </span>
-          <br />
-          để đăng nhập và bắt đầu làm khảo sát.
+          <span className="font-medium text-gray-700">username: {info.username}</span>
+          <span className="font-medium text-gray-700">password: {infor.password}</span>
         </p>
 
         {/* Divider */}

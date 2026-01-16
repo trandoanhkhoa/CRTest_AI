@@ -49,9 +49,17 @@ export default function UserRegisterInfo() {
       setIsReady(true);
 
       setLoading(true);
+
       const res = await UserApi.registeracc(form);
       if (res.status) {
-        window.location.href = '/registersuccess';
+        localStorage.setItem(
+          'registerInfo',
+          JSON.stringify({
+            username: res.username,
+            password: res.password,
+          }),
+        );
+        window.location.href = '/registersuccess/';
       } else {
         alert(res.message);
       }
