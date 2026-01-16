@@ -45,7 +45,7 @@ const RegisterSuccess = () => {
           khảo sát
           <br />
           <span className="font-medium text-gray-700">username: {info.username}</span>
-          <span className="font-medium text-gray-700">password: {infor.password}</span>
+          <span className="font-medium text-gray-700">password: {info.password}</span>
         </p>
 
         {/* Divider */}
