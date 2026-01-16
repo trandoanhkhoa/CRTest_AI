@@ -49,7 +49,6 @@ export default function UserRegisterInfo() {
       setIsReady(true);
 
       setLoading(true);
-
       const res = await UserApi.registeracc(form);
       if (res.status) {
         window.location.href = '/registersuccess';
