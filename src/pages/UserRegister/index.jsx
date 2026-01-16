@@ -118,11 +118,14 @@ export default function UserRegisterInfo() {
             ]}
           />
           <Input
-            label="GPA Tích lũy"
+            label="GPA Tích lũy (Trên thang 4.0)"
             name="gpa"
             type="number"
             value={form.gpa}
             onChange={handleChange}
+            min={0}
+            max={4}
+            step={0.01}
           />
           <Input label="Năm sinh" type="number" name="yearofbirth" onChange={handleChange} />
         </div>
