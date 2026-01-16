@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import Question from '../../api/QuestionApi';
 
 export default function QuizSlide() {
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questions, setquestions] = useState([]);
 
@@ -10,8 +11,18 @@ export default function QuizSlide() {
   const answeredMap = new Map(itemQuestion.map((i) => [i.idquestion, i.useranswer]));
   const startX = useRef(null);
 
+  const Loading = () => (
+    <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500 text-sm">Đang tải câu hỏi...</p>
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await Question.getQuestions();
         setquestions(res);
@@ -24,6 +35,8 @@ export default function QuizSlide() {
         localStorage.setItem('questionIDcurrent', res[0].id);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -88,67 +101,72 @@ export default function QuizSlide() {
   };
   return (
     <div className="w-full h-[100%] flex flex-col items-center justify-center px-4 bg-white shadow-md rounded-lg max-w-[850px]">
-      <div
-        className="relative w-full overflow-y-auto overflow-x-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-      >
+      {loading ? (
+        <Loading />
+      ) : (
         <div
-          className="flex transition-transform duration-300"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          className="relative w-full overflow-y-auto overflow-x-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
         >
-          {questions.map((q, index) => {
-            const answers = q.answer.split('|'); // tách đáp án
+          <div
+            className="flex transition-transform duration-300"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {questions.map((q, index) => {
+              const answers = q.answer.split('|'); // tách đáp án
 
-            return (
-              <div key={q.id} className="w-full shrink-0 p-6">
-                <div className="bg-white p-6 rounded-2xl shadow-md text-justify text-lg font-medium">
-                  {/* Hiển thị câu hỏi */}
+              return (
+                <div key={q.id} className="w-full shrink-0 p-6">
+                  <div className="bg-white p-6 rounded-2xl shadow-md text-justify text-lg font-medium">
+                    {/* Hiển thị câu hỏi */}
 
-                  <div
-                    dangerouslySetInnerHTML={{ __html: q.question1 }}
-                    style={{
-                      whiteSpace: 'normal',
-                      wordBreak: 'break-word',
-                      overflowWrap: 'anywhere',
-                      maxWidth: '100%',
-                    }}
-                  ></div>
+                    <div
+                      dangerouslySetInnerHTML={{ __html: q.question1 }}
+                      style={{
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'anywhere',
+                        maxWidth: '100%',
+                      }}
+                    ></div>
 
-                  {/* Hiển thị danh sách đáp án */}
-                  <div className="mt-4 flex flex-col gap-3">
-                    {answers.map((ans, ansIndex) => (
-                      <label
-                        key={ansIndex}
-                        className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100"
-                      >
-                        <input
-                          type="radio"
-                          name={`question_${q.id}`} // mỗi câu hỏi có group radio riêng
-                          value={alphabet[ansIndex]}
-                          className="w-4 h-4"
-                          onChange={() => handleAnswerChange(q.id, alphabet[ansIndex])}
-                        />
-                        <div
-                          dangerouslySetInnerHTML={{ __html: ans }}
-                          style={{
-                            whiteSpace: 'normal',
-                            wordBreak: 'break-word',
-                            overflowWrap: 'anywhere',
-                            maxWidth: '100%',
-                            fontWeight: 'normal',
-                          }}
-                          className="text-left"
-                        ></div>
-                      </label>
-                    ))}
+                    {/* Hiển thị danh sách đáp án */}
+                    <div className="mt-4 flex flex-col gap-3">
+                      {answers.map((ans, ansIndex) => (
+                        <label
+                          key={ansIndex}
+                          className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100"
+                        >
+                          <input
+                            type="radio"
+                            name={`question_${q.id}`} // mỗi câu hỏi có group radio riêng
+                            value={alphabet[ansIndex]}
+                            className="w-4 h-4"
+                            onChange={() => handleAnswerChange(q.id, alphabet[ansIndex])}
+                          />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: ans }}
+                            style={{
+                              whiteSpace: 'normal',
+                              wordBreak: 'break-word',
+                              overflowWrap: 'anywhere',
+                              maxWidth: '100%',
+                              fontWeight: 'normal',
+                            }}
+                            className="text-left"
+                          ></div>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
       {/* Dot indicators */}
       <div className="flex flex-wrap gap-2 mt-4 justify-center">
         {questions.map((q, i) => (
