@@ -22,9 +22,9 @@ const RegisterSuccess = () => {
       <div className="relative bg-white max-w-md w-full p-8 rounded-3xl shadow-xl text-center">
         {/* Badge */}
         <div
-          className="absolute -top-4 left-1/2 -translate-x-1/2 
-                        bg-blue-500 text-white text-sm font-semibold 
-                        px-4 py-1 rounded-full shadow"
+          className="absolute -top-4 left-1/2 -translate-x-1/2
+                 bg-blue-500 text-white text-sm font-semibold
+                 px-4 py-1 rounded-full shadow"
         >
           Đăng ký thành công
         </div>
@@ -35,29 +35,39 @@ const RegisterSuccess = () => {
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Chúc mừng bạn đã đăng ký thành công!
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Chúc mừng! 🎉</h1>
 
         {/* Description */}
         <p className="text-gray-600 mb-6 leading-relaxed">
-          Hệ thống đã lưu thông tin tài khoản của bạn. Hãy đăng nhập tài khoản bên dưới ắt đầu làm
-          khảo sát
+          Tài khoản của bạn đã được tạo thành công.
           <br />
-          <span className="font-medium text-gray-700">username: {info.username}</span>
-          <span className="font-medium text-gray-700">password: {info.password}</span>
+          Vui lòng sử dụng thông tin bên dưới để đăng nhập và bắt đầu làm khảo sát.
         </p>
 
-        {/* Divider */}
-        <div className="h-px bg-gray-200 mb-6" />
+        {/* Credentials box */}
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-left mb-6 space-y-3">
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Username</p>
+            <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded-lg border">
+              {info.username}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Password</p>
+            <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded-lg border">
+              {info.password}
+            </p>
+          </div>
+        </div>
 
         {/* Button */}
         <a
           href="/login"
-          className="w-full inline-block border border-gray-300 py-2.5 rounded-xl 
-                     font-medium text-gray-700 hover:bg-gray-100 transition"
+          className="w-full inline-block bg-blue-500 text-white py-2.5 rounded-xl
+                 font-semibold hover:bg-blue-600 transition"
         >
-          Về trang chủ
+          Đăng nhập ngay
         </a>
       </div>
     </div>
