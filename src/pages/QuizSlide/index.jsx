@@ -1,40 +1,26 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Question from '../../api/QuestionApi';
 
 export default function QuizSlide() {
   const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [questions, setquestions] = useState([]);
 
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Value của answer câu hỏi
-  const itemQuestion = JSON.parse(localStorage.getItem('Itemquestion')) || [];
-  const answeredMap = new Map(itemQuestion.map((i) => [i.idquestion, i.useranswer]));
-  const startX = useRef(null);
-
-  const Loading = () => (
-    <div className="flex items-center justify-center h-64">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-gray-500 text-sm">Đang tải câu hỏi...</p>
-      </div>
-    </div>
-  );
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
         const res = await Question.getQuestions();
-        setquestions(res);
-        const itemsQuestion = res.map((q) => ({
+        setQuestions(res);
+
+        const items = res.map((q) => ({
           idquestion: q.id,
           trytimes: 0,
           useranswer: '',
         }));
-        localStorage.setItem('Itemquestion', JSON.stringify(itemsQuestion));
-        localStorage.setItem('questionIDcurrent', res[0].id);
-      } catch (error) {
-        console.error(error);
+        localStorage.setItem('Itemquestion', JSON.stringify(items));
+        localStorage.setItem('questionIDcurrent', res[0]?.id);
       } finally {
         setLoading(false);
       }
@@ -42,169 +28,149 @@ export default function QuizSlide() {
 
     fetchData();
   }, []);
-  useEffect(() => {
-    const startTime = () => {
-      const now = new Date();
 
-      // Cộng thêm 7 tiếng cho giờ Việt Nam
-      const vnTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  const itemQuestion = JSON.parse(localStorage.getItem('Itemquestion')) || [];
+  const answeredMap = new Map(itemQuestion.map((i) => [i.idquestion, i.useranswer]));
 
-      localStorage.setItem('currentTime', vnTime.toISOString());
-    };
-
-    startTime();
-  }, []);
-  const handleAnswerChange = (questionID, selectedValue) => {
-    const updateItems = itemQuestion.map((item) =>
-      item.idquestion == questionID ? { ...item, useranswer: selectedValue } : item,
+  const handleAnswerChange = (id, value) => {
+    const updated = itemQuestion.map((i) =>
+      i.idquestion === id ? { ...i, useranswer: value } : i,
     );
-
-    localStorage.setItem('Itemquestion', JSON.stringify(updateItems));
-  };
-  const next = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      localStorage.setItem('questionIDcurrent', questions[currentIndex + 1].id);
-    }
+    localStorage.setItem('Itemquestion', JSON.stringify(updated));
   };
 
-  const prev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      localStorage.setItem('questionIDcurrent', questions[currentIndex - 1].id);
-    }
-  };
+  const question = questions[currentIndex];
+  if (loading) return <Loading />;
+  if (!question) return null;
 
-  // Handle Touch Start
-  const handleTouchStart = (e) => {
-    startX.current = e.touches[0].clientX;
-  };
+  const answers = question.answer.split('|');
 
-  // Handle Touch Move
-  const handleTouchMove = (e) => {
-    if (!startX.current) return;
-
-    const endX = e.touches[0].clientX;
-    const diff = startX.current - endX;
-
-    if (diff > 50) {
-      next();
-      startX.current = null;
-    } else if (diff < -50) {
-      prev();
-      startX.current = null;
-    }
-  };
-  const goToQuestion = (index) => {
-    setCurrentIndex(index);
-    localStorage.setItem('questionIDcurrent', questions[index].id);
-  };
   return (
-    <div className="w-full h-[100%] flex flex-col items-center justify-center px-4 bg-white shadow-md rounded-lg max-w-[850px]">
-      {loading ? (
-        <Loading />
-      ) : (
-        <div
-          className="relative w-full overflow-y-auto overflow-x-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-        >
-          <div
-            className="flex transition-transform duration-300"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+    <div className="w-full flex justify-center px-2 sm:px-4">
+      <div className="w-full max-w-[850px]">
+        {/* ================= NAVIGATION ================= */}
+        <div className="mb-3 flex items-center justify-between gap-3">
+          {/* PREV */}
+          <button
+            disabled={currentIndex === 0}
+            onClick={() => setCurrentIndex((i) => i - 1)}
+            className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-40"
           >
-            {questions.map((q, index) => {
-              const answers = q.answer.split('|'); // tách đáp án
+            ← Prev
+          </button>
 
-              return (
-                <div key={q.id} className="w-full shrink-0 p-6">
-                  <div className="bg-white p-6 rounded-2xl shadow-md text-justify text-lg font-medium">
-                    {/* Hiển thị câu hỏi */}
+          <div className="px-4 py-2 rounded-full bg-gray-100 font-semibold">
+            {currentIndex + 1} / {questions.length}
+          </div>
 
-                    <div
-                      dangerouslySetInnerHTML={{ __html: q.question1 }}
-                      style={{
-                        whiteSpace: 'normal',
-                        wordBreak: 'break-word',
-                        overflowWrap: 'anywhere',
-                        maxWidth: '100%',
-                      }}
-                    ></div>
+          {/* NEXT */}
+          <button
+            disabled={currentIndex === questions.length - 1}
+            onClick={() => setCurrentIndex((i) => i + 1)}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-40"
+          >
+            Next →
+          </button>
+        </div>
+        {/* CARD */}
+        <div
+          className="
+          bg-white
+          rounded-xl
+          shadow-md
+          flex flex-col
 
-                    {/* Hiển thị danh sách đáp án */}
-                    <div className="mt-4 flex flex-col gap-3">
-                      {answers.map((ans, ansIndex) => (
-                        <label
-                          key={ansIndex}
-                          className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100"
-                        >
-                          <input
-                            type="radio"
-                            name={`question_${q.id}`} // mỗi câu hỏi có group radio riêng
-                            value={alphabet[ansIndex]}
-                            className="w-4 h-4"
-                            onChange={() => handleAnswerChange(q.id, alphabet[ansIndex])}
-                          />
-                          <div
-                            dangerouslySetInnerHTML={{ __html: ans }}
-                            style={{
-                              whiteSpace: 'normal',
-                              wordBreak: 'break-word',
-                              overflowWrap: 'anywhere',
-                              maxWidth: '100%',
-                              fontWeight: 'normal',
-                            }}
-                            className="text-left"
-                          ></div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          h-[75vh]
+          sm:h-[80vh]
+          md:h-[80vh]
+        "
+        >
+          {/* ================= QUESTION (SCROLL) ================= */}
+          <div
+            className="
+            flex-1
+            overflow-y-auto
+            p-3
+            sm:p-4
+            md:p-6
+            text-left
+            sm:text-justify
+
+            text-sm
+            sm:text-base
+            md:text-lg
+
+            break-words
+            max-w-full
+            [&_img]:max-w-full
+            [&_img]:h-auto
+            [&_table]:block
+            [&_table]:max-w-full
+            [&_table]:overflow-x-auto
+            [&_pre]:whitespace-pre-wrap
+            [&_code]:break-words
+          "
+            dangerouslySetInnerHTML={{ __html: question.question1 }}
+          />
+
+          {/* ================= ANSWERS (SCROLL) ================= */}
+          <div
+            className="
+            border-t
+            flex-1
+            overflow-y-auto
+
+            px-3
+            sm:px-4
+            md:px-6
+            py-3
+          "
+          >
+            <div className="flex flex-col gap-3">
+              {answers.map((ans, idx) => (
+                <label
+                  key={idx}
+                  className="
+                  flex
+                  items-start
+                  gap-3
+                  p-2
+                  rounded-lg
+                  cursor-pointer
+                  hover:bg-gray-100
+                "
+                >
+                  <input
+                    type="radio"
+                    name={`question_${question.id}`}
+                    checked={answeredMap.get(question.id) === alphabet[idx]}
+                    onChange={() => handleAnswerChange(question.id, alphabet[idx])}
+                  />
+                  <div
+                    dangerouslySetInnerHTML={{ __html: ans }}
+                    className="
+                    break-words
+                    text-sm
+                    sm:text-base
+                    max-w-full
+                  "
+                  />
+                </label>
+              ))}
+            </div>
           </div>
         </div>
-      )}
-
-      {/* Dot indicators */}
-      <div className="flex flex-wrap gap-2 mt-4 justify-center">
-        {questions.map((q, i) => (
-          <button
-            key={q.id}
-            onClick={() => goToQuestion(i)}
-            className={`
-  w-8 h-8 rounded-full flex items-center justify-center
-  text-sm font-semibold transition-all duration-200
-  ${
-    i === currentIndex
-      ? 'bg-blue-500 text-white scale-110 shadow-md'
-      : answeredMap.get(q.id)
-      ? 'bg-green-400 text-white hover:bg-green-500'
-      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-  }
-`}
-          >
-            {i + 1}
-          </button>
-        ))}
       </div>
-      {/* Buttons */}
-      <div className="flex gap-4 mt-6 pb-[30px]">
-        <button
-          onClick={prev}
-          disabled={currentIndex === 0}
-          className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-40"
-        >
-          ← Prev
-        </button>
-        <button
-          onClick={next}
-          disabled={currentIndex === questions.length - 1}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-40"
-        >
-          Next →
-        </button>
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500 text-sm">Đang tải câu hỏi...</p>
       </div>
     </div>
   );

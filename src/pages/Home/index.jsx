@@ -101,13 +101,11 @@ export default function AISearchPage() {
     fetchData();
   }, []);
   return (
-    <div className="flex">
-      <div className="w-full h-[86vh]">
+    <div className="flex flex-col md:flex-row w-full">
+      <div className=" w-full h-auto md:h-[86vh] max-w-full md:max-w-[850px] mx-auto px-0 md:px-4">
         <QuizSlide />
       </div>
-
-      <div className="w-full h-[86vh] flex flex-col items-center justify-between bg-gray-50">
-        {/* Chat Area */}
+      {/* <div className="w-full md:h-[86vh] flex flex-col items-center justify-between bg-gray-50">
         <div className=" w-full max-w-3xl flex-1 overflow-y-auto p-6" id="chatArea">
           {messages.length === 0 && (
             <div className="text-center text-gray-400 mt-20">Ask anything to get started.</div>
@@ -130,7 +128,6 @@ export default function AISearchPage() {
             </div>
           ))}
 
-          {/* Loading bubble */}
           {loading && (
             <div className="self-start bg-gray-200 text-gray-600 px-4 py-3 rounded-2xl max-w-[80%] shadow-md flex gap-2">
               <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
@@ -140,7 +137,6 @@ export default function AISearchPage() {
           )}
         </div>
 
-        {/* Search bar inside screen bottom, non-fixed */}
         <div className="w-full bg-gray-50 px-4 border-t mt-auto border-gray-200">
           <div className="max-w-3xl mx-auto flex items-end gap-3 bg-white bg-white shadow-md rounded-lg p-4 mt-[5px]">
             <textarea
@@ -172,7 +168,7 @@ export default function AISearchPage() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

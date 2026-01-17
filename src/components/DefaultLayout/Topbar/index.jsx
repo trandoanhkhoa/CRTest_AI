@@ -217,8 +217,10 @@ export default function Topbar() {
         )}
       </div>
 
-      <div className="relative w-full h-16 bg-white border-b flex items-center justify-between px-6">
-        <h2 className="text-xl font-semibold">AI Dashboard</h2>
+      {/* <div className="relative w-full h-16 bg-white border-b flex items-center justify-between px-6">
+        <h2 className="hidden md:block text-xl font-semibold">AI Dashboard</h2>
+
+        <span className="md:hidden text-lg font-semibold">🤖</span>
 
         {settingtest?.time && (
           <div className="absolute left-1/2 -translate-x-1/2">
@@ -242,6 +244,43 @@ export default function Topbar() {
         >
           Nộp bài
         </button>
+      </div> */}
+      <div
+        className="w-full h-16 bg-white border-b px-4 md:px-6
+                grid grid-cols-[auto_1fr_auto] items-center"
+      >
+        {/* LEFT */}
+        <div className="flex items-center gap-2">
+          <h2 className="hidden md:block text-xl font-semibold">AI Dashboard</h2>
+          <span className="md:hidden text-lg font-semibold">🤖</span>
+        </div>
+
+        {/* CENTER */}
+        {settingtest?.time && (
+          <div className="flex justify-center">
+            <div
+              className={`px-4 md:px-5 py-1.5 md:py-2 rounded-full font-bold
+        text-base md:text-lg shadow-inner
+        ${timeLeft <= 300 ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-gray-100 text-gray-800'}`}
+            >
+              ⏳ {formatTime(timeLeft)}
+            </div>
+          </div>
+        )}
+
+        {/* RIGHT */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => handleSubmitTest(false)}
+            disabled={isSubmittingRef.current}
+            className="px-4 md:px-5 py-2.5 rounded-xl
+                 bg-gradient-to-r from-blue-600 to-indigo-600
+                 text-white font-semibold shadow-md hover:shadow-lg
+                 disabled:opacity-60"
+          >
+            Nộp bài
+          </button>
+        </div>
       </div>
     </>
   );
