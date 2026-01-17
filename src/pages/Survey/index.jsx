@@ -4,6 +4,16 @@ import SurveyApi from '../../api/Survey';
 export default function SurveyPage() {
   const [traLoi, setTraLoi] = useState({});
   const [questions, setquestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const Loading = () => (
+    <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500 text-sm">Đang tải câu hỏi...</p>
+      </div>
+    </div>
+  );
   const handleChange = (id, value) => {
     setTraLoi((prev) => ({
       ...prev,
@@ -12,8 +22,14 @@ export default function SurveyPage() {
   };
   useEffect(() => {
     const fetchdata = async () => {
-      const res = await SurveyApi.getsurvey();
-      setquestions(res);
+      try {
+        setLoading(true);
+        const res = await SurveyApi.getsurvey();
+
+        setquestions(res);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchdata();
   }, []);
@@ -55,7 +71,6 @@ export default function SurveyPage() {
       questionId: q.id,
       score: traLoi[q.id] ?? 5, // nếu chưa chọn → 5
     }));
-    //console.log(payload);
 
     const checkOK = SurveyApi.submitsurvey(payload);
     if (!checkOK) console.log('Lỗi chưa được gửi');
@@ -75,81 +90,61 @@ export default function SurveyPage() {
             vào các câu hỏi khảo sát
           </p>
         </div>
-
         {/* Survey Card */}
         <div className="space-y-6 bg-white/70 backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-8">
-          {questions.map((q, index) => (
-            <div key={q.id} className="p-5 rounded-2xl bg-white/60 border border-slate-200">
-              <div className="mb-4">
-                <p className="text-slate-800 font-medium mb-2">{q.question}</p>
+          {loading ? (
+            <Loading />
+          ) : (
+            questions.map((q, index) => (
+              <div key={q.id} className="p-5 rounded-2xl bg-white/60 border border-slate-200">
+                <div className="mb-4">
+                  <p className="text-slate-800 font-medium mb-2">{q.question}</p>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex justify-between text-xs text-slate-500">
+                      <span>Hoàn toàn không đồng ý</span>
+                      <span>Hoàn toàn đồng ý</span>
+                    </div>
 
-                <div className="flex flex-col gap-3">
-                  <div className="flex justify-between text-xs text-slate-500">
-                    {index != questions.length - 1 && (
-                      <>
-                        <span>Hoàn toàn không đồng ý</span>
-                        <span>Hoàn toàn đồng ý</span>
-                      </>
-                    )}
+                    <div
+                      className={`grid gap-2
+    ${q.type === 'yesno' ? 'grid-cols-2' : 'grid-cols-5 sm:grid-cols-10'}
+  `}
+                    >
+                      {(q.type === 'yesno'
+                        ? [
+                            { label: 'Không', value: 0 },
+                            { label: 'Có', value: 1 },
+                          ]
+                        : Array.from({ length: 10 }).map((_, index) => ({
+                            label: index + 1,
+                            value: index + 1,
+                          }))
+                      ).map((opt) => {
+                        const active = traLoi[q.id] === opt.value;
+
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => handleChange(q.id, opt.value)}
+                            className={`h-10 rounded-xl border text-sm font-medium transition
+          ${
+            active
+              ? 'bg-gradient-to-br from-emerald-500 to-cyan-500 text-white border-transparent shadow-md'
+              : 'bg-white text-slate-700 border-slate-300 hover:border-emerald-400 hover:text-emerald-600'
+          }
+        `}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  {index != questions.length - 1 && (
-                    <>
-                      <div className="grid grid-cols-10 gap-2">
-                        {Array.from({ length: 10 }).map((_, index) => {
-                          const value = index + 1;
-                          const active = traLoi[q.id] === value;
-
-                          return (
-                            <button
-                              key={value}
-                              type="button"
-                              onClick={() => handleChange(q.id, value)}
-                              className={`h-10 rounded-xl border text-sm font-medium transition
-                            ${
-                              active
-                                ? 'bg-gradient-to-br from-emerald-500 to-cyan-500 text-white border-transparent shadow-md'
-                                : 'bg-white text-slate-700 border-slate-300 hover:border-emerald-400 hover:text-emerald-600'
-                            }
-                          `}
-                            >
-                              {value}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
-                  {index == questions.length - 1 && (
-                    <>
-                      <div className="grid grid-cols-10 gap-2">
-                        {Array.from({ length: 2 }).map((_, index) => {
-                          const value = index;
-                          const active = (traLoi[q.id] || 0) === value;
-
-                          return (
-                            <button
-                              key={value}
-                              type="button"
-                              onClick={() => handleChange(q.id, value)}
-                              className={`h-10 rounded-xl border text-sm font-medium transition
-                            ${
-                              active
-                                ? 'bg-gradient-to-br from-emerald-500 to-cyan-500 text-white border-transparent shadow-md'
-                                : 'bg-white text-slate-700 border-slate-300 hover:border-emerald-400 hover:text-emerald-600'
-                            }
-                          `}
-                            >
-                              {value === 0 ? 'Không' : 'Có'}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
 
           {/* Submit Button */}
           <div className="pt-4 flex justify-end">

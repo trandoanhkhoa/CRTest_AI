@@ -5,7 +5,10 @@ export default function QuizSlide() {
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [itemQuestion, setItemQuestion] = useState(() => {
+    const saved = localStorage.getItem('Itemquestion');
+    return saved ? JSON.parse(saved) : [];
+  });
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   useEffect(() => {
@@ -29,22 +32,35 @@ export default function QuizSlide() {
     fetchData();
   }, []);
 
-  const itemQuestion = JSON.parse(localStorage.getItem('Itemquestion')) || [];
-  const answeredMap = new Map(itemQuestion.map((i) => [i.idquestion, i.useranswer]));
+  const handleAnswerChange = (questionID, selectedValue) => {
+    const storedItems = JSON.parse(localStorage.getItem('Itemquestion')) || [];
 
-  const handleAnswerChange = (id, value) => {
-    const updated = itemQuestion.map((i) =>
-      i.idquestion === id ? { ...i, useranswer: value } : i,
+    const updatedItems = storedItems.map((item) =>
+      item.idquestion === questionID ? { ...item, useranswer: selectedValue } : item,
     );
-    localStorage.setItem('Itemquestion', JSON.stringify(updated));
+
+    setItemQuestion(updatedItems);
+    localStorage.setItem('Itemquestion', JSON.stringify(updatedItems));
+  };
+  const next = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      localStorage.setItem('questionIDcurrent', questions[currentIndex + 1].id);
+    }
   };
 
+  const prev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      localStorage.setItem('questionIDcurrent', questions[currentIndex - 1].id);
+    }
+  };
   const question = questions[currentIndex];
   if (loading) return <Loading />;
   if (!question) return null;
 
   const answers = question.answer.split('|');
-
+  const currentAnswer = itemQuestion.find((i) => i.idquestion === question.id)?.useranswer;
   return (
     <div className="w-full flex justify-center px-2 sm:px-4">
       <div className="w-full max-w-[850px]">
@@ -53,7 +69,7 @@ export default function QuizSlide() {
           {/* PREV */}
           <button
             disabled={currentIndex === 0}
-            onClick={() => setCurrentIndex((i) => i - 1)}
+            onClick={prev}
             className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-40"
           >
             ← Prev
@@ -66,7 +82,7 @@ export default function QuizSlide() {
           {/* NEXT */}
           <button
             disabled={currentIndex === questions.length - 1}
-            onClick={() => setCurrentIndex((i) => i + 1)}
+            onClick={next}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-40"
           >
             Next →
@@ -143,7 +159,7 @@ export default function QuizSlide() {
                   <input
                     type="radio"
                     name={`question_${question.id}`}
-                    checked={answeredMap.get(question.id) === alphabet[idx]}
+                    checked={currentAnswer === alphabet[idx]}
                     onChange={() => handleAnswerChange(question.id, alphabet[idx])}
                   />
                   <div

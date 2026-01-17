@@ -52,6 +52,11 @@ export default function UserRegisterInfo() {
 
       const res = await UserApi.registeracc(form);
       if (res.status) {
+        // const checksendMail = await UserApi.sendmail(res.userid);
+        // if (!checksendMail.status) {
+        //   alert('❌ Gửi email xác nhận thất bại. Vui lòng kiểm tra lại email đã nhập.');
+        //   return;
+        // }
         localStorage.setItem(
           'registerInfo',
           JSON.stringify({

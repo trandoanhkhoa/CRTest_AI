@@ -100,7 +100,7 @@ export default function UserTable({ users = [] }) {
                   <div className="flex justify-start">
                     <div className="max-w-[80%] rounded-xl bg-slate-100 text-slate-800 px-4 py-2 text-sm">
                       <span className="block text-xs font-semibold text-slate-500 mb-1">User</span>
-                      {c.questionUser}
+                      {c.questionuser}
                     </div>
                   </div>
 
@@ -108,7 +108,7 @@ export default function UserTable({ users = [] }) {
                   <div className="flex justify-end">
                     <div className="max-w-[80%] rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-white px-4 py-2 text-sm shadow-md">
                       <span className="block text-xs font-semibold text-white/80 mb-1">AI</span>
-                      {c.answerAi}
+                      {c.answerai}
                     </div>
                   </div>
                 </div>
@@ -194,8 +194,8 @@ export default function UserTable({ users = [] }) {
                         item.answer >= 4
                           ? 'bg-emerald-100 text-emerald-700'
                           : item.answer >= 2
-                          ? 'bg-cyan-100 text-cyan-700'
-                          : 'bg-rose-100 text-rose-700'
+                            ? 'bg-cyan-100 text-cyan-700'
+                            : 'bg-rose-100 text-rose-700'
                       }`}
                         >
                           {item.answer}

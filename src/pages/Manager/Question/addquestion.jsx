@@ -156,9 +156,9 @@ export default function AddQuestionPage() {
           E: q.answer.split('|')[4] || '',
           F: q.answer.split('|')[5] || '',
         },
-        correctAnswer: q.correctAnswer?.trim() || '',
-        correctDesc: q.correctAnswerDesc || '',
-        hallucinationAnswer: q.hallucinationAnswer?.trim() || '',
+        correctAnswer: q.correctanswer?.trim() || '',
+        correctDesc: q.correctanswerdesc || '',
+        hallucinationAnswer: q.hallucinationanswer?.trim() || '',
         hallucinationDesc: q.hallucination || '',
         timeTries: q.timeTries ?? 1,
       });

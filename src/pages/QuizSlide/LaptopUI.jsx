@@ -40,7 +40,7 @@ export default function QuizSlide() {
       }
     };
 
-    //fetchData();
+    fetchData();
   }, []);
   useEffect(() => {
     const startTime = () => {
@@ -174,16 +174,16 @@ export default function QuizSlide() {
             key={q.id}
             onClick={() => goToQuestion(i)}
             className={`
-  w-8 h-8 rounded-full flex items-center justify-center
-  text-sm font-semibold transition-all duration-200
-  ${
-    i === currentIndex
-      ? 'bg-blue-500 text-white scale-110 shadow-md'
-      : answeredMap.get(q.id)
-      ? 'bg-green-400 text-white hover:bg-green-500'
-      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-  }
-`}
+              w-8 h-8 rounded-full flex items-center justify-center
+              text-sm font-semibold transition-all duration-200
+              ${
+                i === currentIndex
+                  ? 'bg-blue-500 text-white scale-110 shadow-md'
+                  : answeredMap.get(q.id)
+                    ? 'bg-green-400 text-white hover:bg-green-500'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }
+          `}
           >
             {i + 1}
           </button>

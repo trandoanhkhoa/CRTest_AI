@@ -16,6 +16,9 @@ const UserApi = {
   edituser: (data) => {
     return axios.put('/user/edituser', data);
   },
+  sendmail: (userid) => {
+    return axios.post(`/user/sendemail/${userid}`);
+  },
 };
 
 export default UserApi;
