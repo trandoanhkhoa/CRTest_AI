@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import UserApi from '../../api/UserApi';
 
 import QuizSlide from '../QuizSlide/quizslide.jsx';
-import Chatbox from '../Chatbox/chatbox.jsx';
+import Chatbox from '../Chatbox/Chatbox.jsx';
 import '../Home/home.css';
 
 export default function AISearchPage() {
